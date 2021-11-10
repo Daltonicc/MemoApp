@@ -17,14 +17,11 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .darkGray
-        
         memoTableView.delegate = self
         memoTableView.dataSource = self
         memoTableView.backgroundColor = .black
         
         topViewSetting()
-
 
     }
     
@@ -32,12 +29,18 @@ class MainViewController: UIViewController {
 
     func topViewSetting() {
         
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 40)
+        view.backgroundColor = .darkGray
         
-        let textFieldInsideSearchBar = searchBar.value(forKey: "searchField") as? UITextField
-        textFieldInsideSearchBar?.textColor = .white
-        textFieldInsideSearchBar?.backgroundColor = .systemGray
+        let searchController = UISearchController(searchResultsController: nil)
+        let insideSearchBar = searchController.searchBar.value(forKey: "searchField") as? UITextField
         
+        insideSearchBar?.textColor = .white
+        insideSearchBar?.backgroundColor = .systemGray
+        
+        searchController.searchBar.placeholder = "검색"
+        self.navigationItem.searchController = searchController
+        self.navigationItem.title = "N개의 메모"
+        self.navigationController?.navigationBar.prefersLargeTitles = true
     }
 
 }
@@ -51,7 +54,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return section == 0 ? 5 : 10
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -67,10 +70,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        
-        return section == 0 ? "고정된 메모" : "메모"
-    }
     
 //    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
 //
@@ -94,13 +93,14 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView()
         let sectionLabel = UILabel()
-        sectionLabel.font = UIFont.boldSystemFont(ofSize: 30)
+        sectionLabel.font = UIFont.boldSystemFont(ofSize: 25)
         sectionLabel.translatesAutoresizingMaskIntoConstraints = false
 
 
         if section == 0 {
             sectionLabel.text = "고정된 메모"
-            
+            let safeArea = headerView.safeAreaLayoutGuide
+
 //            sectionLabel.topAnchor.constraint(equalTo: sectionLabel.topAnchor, constant: 30).isActive = true
 
             headerView.addSubview(sectionLabel)
