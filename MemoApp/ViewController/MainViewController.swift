@@ -16,14 +16,17 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         memoTableView.delegate = self
         memoTableView.dataSource = self
         memoTableView.backgroundColor = .black
         
+        
         topViewSetting()
 
     }
+    
+    
     
     // MARK: - Method
 
@@ -41,11 +44,14 @@ class MainViewController: UIViewController {
         self.navigationItem.searchController = searchController
         self.navigationItem.title = "N개의 메모"
         self.navigationController?.navigationBar.prefersLargeTitles = true
+        
+        navigationItem.backBarButtonItem = UIBarButtonItem(
+            title: "메모", style: .plain, target: nil, action: nil)
     }
 
 }
 
-// MARK: - Extension: TableView
+// MARK: - Extension(TableView)
 
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
@@ -70,17 +76,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-    
-//    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-//
-//        let header = view as! UITableViewHeaderFooterView
-//        header.textLabel?.font = UIFont.boldSystemFont(ofSize: 25)
-//        header.textLabel?.textAlignment = .left
-//
-//    }
-    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 45.0
+        return 60
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -99,20 +96,18 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
         if section == 0 {
             sectionLabel.text = "고정된 메모"
-            let safeArea = headerView.safeAreaLayoutGuide
+            let _ = headerView.safeAreaLayoutGuide // 이유는 알 수 없지만 해당 상수를 넣지 않으면 처음에는 헤더가 존재하나 스크롤 했다가 돌아오면 헤더가 사라져버린다;
 
-//            sectionLabel.topAnchor.constraint(equalTo: sectionLabel.topAnchor, constant: 30).isActive = true
-
+            headerView.bounds = headerView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0))
             headerView.addSubview(sectionLabel)
 
             return headerView
 
         } else {
             sectionLabel.text = "메모"
-            let safeArea = headerView.safeAreaLayoutGuide
-//            let leadingConstraint = sectionLabel.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 16)
-//            leadingConstraint.isActive = true
+            let _ = headerView.safeAreaLayoutGuide // 위에 거랑 얘 둘다 없애면 헤더 두 개다 사라짐. 쓰지도 않는데 왜사라지지
                         
+            headerView.bounds = headerView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0))
             headerView.addSubview(sectionLabel)
             
             return headerView
@@ -120,27 +115,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-
-// MARK: - Extension: SearchBar
-
-extension MainViewController: UISearchBarDelegate {
-    
-    
-}
-
-
-
 /* 해결해야 할 부분들
  
 1. 섹션 헤더의 좌측 마진값을 없애고 싶은데 아직 해결못함. -> 해결 viewForHeaderInSection 메서드 이용. 헤더뷰를 따로 만들어줌.
     헤더뷰 위에 마진값 줘야함.
 2. 셀과 셀사이 보더 왼쪽 마진 때문에 보더라인이 끊겨 있다.
- 
- 
- 
- 
- 
- 
+3. 0번째 섹션의 헤더가 네비게이션바와 너무 붙어있음. -> 헤더의 높이를 가능한 높인 다음, 헤더뷰 내부 패딩값을 줘서 해결
  
  
  //자꾸 0번째 섹션의 헤더가 잘리게 나와서 만들어준 헤더 뷰. 없으면 헤더가 잘려서 안보인다. 스크롤해야 보임. -> heightForHeaderInSection메서드로 해결.
