@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 class MainViewController: UIViewController {
 
@@ -13,6 +14,9 @@ class MainViewController: UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var memoTableView: UITableView!
     @IBOutlet weak var bottomToolBar: UIToolbar!
+    
+    let localRealm = try! Realm()
+    var memoList: Results<MemoList>!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,11 +60,12 @@ class MainViewController: UIViewController {
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return memoList == nil ? 0 : 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section == 0 ? 5 : 10
+        return memoList == nil ? 0 : memoList.count
+
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
