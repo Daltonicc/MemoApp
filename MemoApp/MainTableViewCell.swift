@@ -19,11 +19,17 @@ class MainTableViewCell: UITableViewCell {
     @IBOutlet weak var memoDateLabel: UILabel!
     @IBOutlet weak var memoContentLabel: UILabel!
     
-    
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-
+    func cellconfiguration(row: MemoList) {
+        
+        memoTitleLabel.text = row.title
+        memoTitleLabel.font = UIFont.boldSystemFont(ofSize: 20)
+        
+        memoDateLabel.text = row.date
+        memoDateLabel.textColor = .systemGray2
+        
+        memoContentLabel.text = row.subContent
+        memoContentLabel.textColor = .systemGray2
+        
     }
 
 

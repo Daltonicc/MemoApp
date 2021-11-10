@@ -21,13 +21,24 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        topViewSetting()
+        memoTableView.backgroundColor = .black
+        memoList = localRealm.objects(MemoList.self)
+    
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        memoTableView.reloadData()
+        // 데이터베이스에 아무것도 없으면 테이블뷰 실행 X
+        guard memoList.count != 0 else { return }
+        
         memoTableView.delegate = self
         memoTableView.dataSource = self
-        memoTableView.backgroundColor = .black
+        self.navigationItem.title = "\(memoList.count)개의 메모"
         
-        
-        topViewSetting()
-
     }
     
     
@@ -43,11 +54,11 @@ class MainViewController: UIViewController {
         
         insideSearchBar?.textColor = .white
         insideSearchBar?.backgroundColor = .systemGray
-        
         searchController.searchBar.placeholder = "검색"
+        
         self.navigationItem.searchController = searchController
-        self.navigationItem.title = "N개의 메모"
         self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationItem.title = "0개의 메모"
         
         navigationItem.backBarButtonItem = UIBarButtonItem(
             title: "메모", style: .plain, target: nil, action: nil)
@@ -60,11 +71,11 @@ class MainViewController: UIViewController {
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return memoList == nil ? 0 : 2
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return memoList == nil ? 0 : memoList.count
+        return memoList.count
 
     }
     
@@ -76,7 +87,11 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MainTableViewCell.identifier, for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
         
+        let row = memoList[indexPath.row]
+        
         cell.backgroundColor = .darkGray
+        
+        cell.cellconfiguration(row: row)
     
         return cell
     }
@@ -86,6 +101,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let sb = UIStoryboard(name: "Content", bundle: nil)
+        let vc = sb.instantiateViewController(withIdentifier: "MemoViewController") as! MemoViewController
+        
+        
+        self.navigationController?.pushViewController(vc, animated: true)
         
         //회색표시 없애기
         tableView.deselectRow(at: indexPath, animated: true)
@@ -126,7 +147,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     헤더뷰 위에 마진값 줘야함.
 2. 셀과 셀사이 보더 왼쪽 마진 때문에 보더라인이 끊겨 있다.
 3. 0번째 섹션의 헤더가 네비게이션바와 너무 붙어있음. -> 헤더의 높이를 가능한 높인 다음, 헤더뷰 내부 패딩값을 줘서 해결
- 
+4. 메모작성이나 수정하고 돌아오면 서치바가 안보인다 테이블뷰를 스크롤해야 다시나옴.
  
  //자꾸 0번째 섹션의 헤더가 잘리게 나와서 만들어준 헤더 뷰. 없으면 헤더가 잘려서 안보인다. 스크롤해야 보임. -> heightForHeaderInSection메서드로 해결.
 

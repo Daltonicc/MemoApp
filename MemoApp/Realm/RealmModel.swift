@@ -13,15 +13,18 @@ class MemoList: Object {
     @Persisted var title: String
     @Persisted var date: String
     @Persisted var subContent: String
+    @Persisted var favoriteStatus: Bool
+
     
     @Persisted(primaryKey: true) var _id: ObjectId
     
-    convenience init(title: String, date: String, subContent: String) {
+    convenience init(title: String, date: String, subContent: String, favoriteStatus: Bool) {
         self.init()
         
         self.title = title
         self.date = date
         self.subContent = subContent
+        self.favoriteStatus = favoriteStatus
         
     }
 }
