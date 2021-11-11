@@ -24,21 +24,10 @@ class MemoViewController: UIViewController {
 
         view.backgroundColor = .darkGray
         
-        
         navigationItemSetting()
         memoTextViewSetting()
         
-        
-
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        //키보드 바로 띄워주기
-        memoTextView.becomeFirstResponder()
-    }
-    
     
     // MARK: - Method
     
@@ -49,6 +38,7 @@ class MemoViewController: UIViewController {
         
         navigationItem.rightBarButtonItems = [finishButton, shareButton]
         
+
     }
     
     func memoTextViewSetting() {
@@ -59,13 +49,42 @@ class MemoViewController: UIViewController {
         
         if memoData.title == "" {
             memoTextView.text = ""
+            //키보드 바로 띄워주기
+            memoTextView.becomeFirstResponder()
         } else {
             memoTextView.text = memoData.title + "\n" + memoData.subContent
         }
     }
     
+    
     @objc func shareButtonClicked() {
         
+        var shareText: [Any] = []
+        
+        if let text = memoTextView.text {
+            shareText.append(text)
+        
+            let activityViewController = UIActivityViewController(activityItems: shareText, applicationActivities: nil)
+            activityViewController.popoverPresentationController?.sourceView = self.view
+        
+            self.present(activityViewController, animated: true, completion: nil)
+            
+            activityViewController.completionWithItemsHandler = { (activityType: UIActivity.ActivityType?, completed: Bool, arrayReturnedItems: [Any]?, error: Error?) in
+                if completed {
+                    showToast(vc: self, message: "공유 성공")
+                    
+                } else {
+                    showToast(vc: self, message: "공유 실패")
+                    
+                }
+                if let shareError = error {
+                    showToast(vc: self, message: "\(shareError.localizedDescription)")
+                }
+                
+            }
+        } else {
+            print("공유할 내용이 없습니다.")
+        }
     }
     
     @objc func finishButtonClicked() {
@@ -73,16 +92,18 @@ class MemoViewController: UIViewController {
         if let text = memoTextView.text {
             //타이틀값 얻으려고 줄단위로 자른 배열 생성. 첫째 줄만 잘라서 변수에 담아볼랬는데 못찾음(문자열 관련 공부 필요) 추후에 방법 찾으면 개선
             let textViewArray = text.split(separator: "\n")
-            let titleForMain = textViewArray[0]
-            let nowDate = Date()
+            var titleForMain = ""
             var contentForMain = ""
+            let nowDate = Date()
             let favoriteStatus = false
             
             //추가 텍스트가 없을때 분기처리. 없으면 빈값으로 받아줌
+            if textViewArray.count > 0 {
+                titleForMain = String(textViewArray[0])
+            }
+            
             if textViewArray.count > 1 {
                 contentForMain = String(textViewArray[1])
-            } else {
-                contentForMain = ""
             }
             
             let dateFormatter = DateFormatter()
@@ -93,15 +114,21 @@ class MemoViewController: UIViewController {
                         
             let memo = MemoList(title: String(titleForMain), date: dateForMain, subContent: String(contentForMain), favoriteStatus: favoriteStatus)
             
-            try! localRealm.write {
-                localRealm.add(memo)
+            //아무 텍스트가 없을 때
+            if titleForMain == "" && contentForMain == "" {
+                try! localRealm.write {
+                    localRealm.delete(memoData)
+                }
+            } else {
+                try! localRealm.write {
+                    localRealm.delete(memoData)
+                    localRealm.add(memo)
+                }
             }
             
             self.navigationController?.popViewController(animated: true)
             
-            //텍스트 없을때
         } else {
-            //디비에서 삭제해야함
             print("텍스트 없음")
             self.navigationController?.popViewController(animated: true)
         }

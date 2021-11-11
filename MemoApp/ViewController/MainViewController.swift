@@ -64,7 +64,7 @@ class MainViewController: UIViewController {
         self.navigationItem.title = "0개의 메모"
         
     }
-
+    
 }
 
 // MARK: - Extension(TableView)
@@ -76,8 +76,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return memoList.count
-
+        
+        if section == 0 {
+            return 1
+        } else {
+            return memoList.count
+        }
+    
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -111,11 +116,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         vc.memoData = memo
 //         안됨,,(해결해야 할 부분들 5번 참조)
 //         vc.whenYouPressCellAtMainVC()
-        
-
-        
-
-        
+    
+        //셀을 클릭해서 넘어갈 경우 백바버튼아이템 타이틀 변경.
         navigationItem.backBarButtonItem = UIBarButtonItem(
             title: "검색", style: .plain, target: nil, action: nil)
         
@@ -162,6 +164,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 3. 0번째 섹션의 헤더가 네비게이션바와 너무 붙어있음. -> 헤더의 높이를 가능한 높인 다음, 헤더뷰 내부 패딩값을 줘서 해결
 4. 메모작성이나 수정하고 돌아오면 서치바가 안보인다 테이블뷰를 스크롤해야 다시나옴.
 5. 메모뷰컨트롤러에 텍스트뷰가 분명 존재하는데도 불구하고 메인뷰컨트롤에서 String값을 메모뷰컨트롤러로 넘기는데에 실패함. 자꾸 해당 텍스트뷰가 nil이라고 뜸. 텍스트뷰의 텍스트값이 없어서 그런건가 했지만 그건 또 아님. 텍스트뷰가 없다고 인식하는 듯.
+6. 텍스트뷰에서 아무내용도 수정하지 않은 상태에서 백버튼을 클릭하면 alert을 띄워주려고 했다. 그런데 작동안하길래 구글링 해보니 백버튼에는 액션을 넣어줄 수 없다고 한다. 그러면 백버튼 액션으로 수정된 텍스트뷰를 저장하는 것이 불가능하지 않나?
     
     테스트로 메모뷰컨트롤러에 텍스트뷰를 코드로 하나 만들었는데 요건 또 정상적으로 인식함.
  
