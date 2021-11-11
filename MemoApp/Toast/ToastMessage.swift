@@ -7,7 +7,8 @@
 
 import UIKit
 
-func showToast(vc: UIViewController ,message : String, font: UIFont = UIFont.systemFont(ofSize: 14.0)) {
+func showToast(vc: UIViewController ,message : String, font: UIFont = UIFont.systemFont(ofSize: 20.0)) {
+    
     let toastLabel = UILabel(frame: CGRect(x: vc.view.frame.size.width/2 - 75, y: vc.view.frame.size.height-100, width: 150, height: 35))
     toastLabel.backgroundColor = UIColor.white.withAlphaComponent(0.6)
     toastLabel.textColor = UIColor.white

@@ -15,9 +15,6 @@ class MemoViewController: UIViewController {
     let localRealm = try! Realm()
     var memoList: Results<MemoList>!
     var memoData: MemoList = MemoList(title: "", date: "", subContent: "", favoriteStatus: false)
-    let test = UITextView()
-
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,8 +34,6 @@ class MemoViewController: UIViewController {
         let finishButton = UIBarButtonItem(title: "완료", style: .plain, target: self, action: #selector(finishButtonClicked))
         
         navigationItem.rightBarButtonItems = [finishButton, shareButton]
-        
-
     }
     
     func memoTextViewSetting() {
@@ -72,15 +67,12 @@ class MemoViewController: UIViewController {
             activityViewController.completionWithItemsHandler = { (activityType: UIActivity.ActivityType?, completed: Bool, arrayReturnedItems: [Any]?, error: Error?) in
                 if completed {
                     showToast(vc: self, message: "공유 성공")
-                    
                 } else {
                     showToast(vc: self, message: "공유 실패")
-                    
                 }
                 if let shareError = error {
                     showToast(vc: self, message: "\(shareError.localizedDescription)")
                 }
-                
             }
         } else {
             print("공유할 내용이 없습니다.")
@@ -114,20 +106,27 @@ class MemoViewController: UIViewController {
                         
             let memo = MemoList(title: String(titleForMain), date: dateForMain, subContent: String(contentForMain), favoriteStatus: favoriteStatus)
             
-            //아무 텍스트가 없을 때
-            if titleForMain == "" && contentForMain == "" {
-                try! localRealm.write {
-                    localRealm.delete(memoData)
+            //초기 데이터베이스에 아무것도 없을 때 처리.
+            if memoList != nil {
+                //아무 텍스트가 없을 때
+                if titleForMain == "" && contentForMain == "" {
+                    try! localRealm.write {
+                        localRealm.delete(memoData)
+                    }
+                } else {
+                    try! localRealm.write {
+                        localRealm.delete(memoData)
+                        localRealm.add(memo)
+                    }
                 }
             } else {
                 try! localRealm.write {
-                    localRealm.delete(memoData)
                     localRealm.add(memo)
                 }
             }
             
-            self.navigationController?.popViewController(animated: true)
             
+            self.navigationController?.popViewController(animated: true)
         } else {
             print("텍스트 없음")
             self.navigationController?.popViewController(animated: true)

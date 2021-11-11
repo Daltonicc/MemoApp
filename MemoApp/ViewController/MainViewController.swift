@@ -60,6 +60,8 @@ class MainViewController: UIViewController {
         searchController.searchBar.placeholder = "검색"
         
         self.navigationItem.searchController = searchController
+        self.navigationItem.hidesSearchBarWhenScrolling = false 
+
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.title = "0개의 메모"
         
@@ -93,17 +95,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MainTableViewCell.identifier, for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
         
-        let row = memoList[indexPath.row]
+        //최신 순으로 정렬
+        let row = memoList.reversed()[indexPath.row]
         
         cell.backgroundColor = .darkGray
-        
         cell.cellconfiguration(row: row)
     
         return cell
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 60
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -128,7 +126,57 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
     }
     
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let row = self.memoList.reversed()[indexPath.row]
+        let favoriteAction = UIContextualAction(style: .normal, title: "") { action, view, completionHandler in
+            
+            try! self.localRealm.write {
+                
+                if row.favoriteStatus == false {
+                    row.favoriteStatus = true
+                } else {
+                    row.favoriteStatus = false
+                }
+            }
+            completionHandler(true)
+        }
+        
+        favoriteAction.backgroundColor = .systemOrange
+        if row.favoriteStatus == true {
+            favoriteAction.image = UIImage(systemName: "pin.fill")
+        } else {
+            favoriteAction.image = UIImage(systemName: "pin.slash.fill")
+        }
+        
+        tableView.reloadData()
+        return UISwipeActionsConfiguration(actions: [favoriteAction])
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let row = self.memoList.reversed()[indexPath.row]
+        let deleteAction = UIContextualAction(style: .destructive, title: "") { action, view, completionHandler in
+            
+            try! self.localRealm.write {
+                
+                self.localRealm.delete(row)
+                tableView.reloadData()
+            }
+            
+            completionHandler(true)
+        }
+        deleteAction.image = UIImage(systemName: "trash.fill")
+        
+        return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 60
+    }
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        
         let headerView = UIView()
         let sectionLabel = UILabel()
         sectionLabel.font = UIFont.boldSystemFont(ofSize: 25)
@@ -143,7 +191,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             headerView.addSubview(sectionLabel)
 
             return headerView
-
         } else {
             sectionLabel.text = "메모"
             let _ = headerView.safeAreaLayoutGuide // 위에 거랑 얘 둘다 없애면 헤더 두 개다 사라짐. 쓰지도 않는데 왜사라지지
@@ -162,7 +209,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     헤더뷰 위에 마진값 줘야함.
 2. 셀과 셀사이 보더 왼쪽 마진 때문에 보더라인이 끊겨 있다.
 3. 0번째 섹션의 헤더가 네비게이션바와 너무 붙어있음. -> 헤더의 높이를 가능한 높인 다음, 헤더뷰 내부 패딩값을 줘서 해결
-4. 메모작성이나 수정하고 돌아오면 서치바가 안보인다 테이블뷰를 스크롤해야 다시나옴.
+4. 메모작성이나 수정하고 돌아오면 서치바가 안보인다 테이블뷰를 스크롤해야 다시나옴. (해결)
+    -> self.navigationItem.hidesSearchBarWhenScrolling = false 하니까 다른 뷰 갔다와도 잘 보인다! 근데 이 메서드는 테이블뷰 스크롤할때 계속 서치바가 보여주게끔 하는 메서드인데 내가 겪은 이슈랑 무슨 상관이 있는지는 아직 모르겠음.
+
 5. 메모뷰컨트롤러에 텍스트뷰가 분명 존재하는데도 불구하고 메인뷰컨트롤에서 String값을 메모뷰컨트롤러로 넘기는데에 실패함. 자꾸 해당 텍스트뷰가 nil이라고 뜸. 텍스트뷰의 텍스트값이 없어서 그런건가 했지만 그건 또 아님. 텍스트뷰가 없다고 인식하는 듯.
 6. 텍스트뷰에서 아무내용도 수정하지 않은 상태에서 백버튼을 클릭하면 alert을 띄워주려고 했다. 그런데 작동안하길래 구글링 해보니 백버튼에는 액션을 넣어줄 수 없다고 한다. 그러면 백버튼 액션으로 수정된 텍스트뷰를 저장하는 것이 불가능하지 않나?
     

@@ -72,6 +72,7 @@
 		6A353A9C27391D700062B780 /* MemoApp */ = {
 			isa = PBXGroup;
 			children = (
+				6A353AEC273D3E3A0062B780 /* Toast */,
 				6A353AE2273C03310062B780 /* Realm */,
 				6A353ADF273BCD530062B780 /* ViewController */,
 				6A353ADE273BCD400062B780 /* StoryBoard */,
@@ -79,7 +80,6 @@
 				6A353AB32739283B0062B780 /* MainTableViewCell.swift */,
 				6A353A9D27391D700062B780 /* AppDelegate.swift */,
 				6A353A9F27391D700062B780 /* SceneDelegate.swift */,
-				6A353AEA273D38660062B780 /* ToastMessage.swift */,
 				6A353AA627391D710062B780 /* Assets.xcassets */,
 				6A353AA827391D710062B780 /* LaunchScreen.storyboard */,
 				6A353AAB27391D710062B780 /* Info.plist */,
@@ -119,6 +119,14 @@
 				6A353AE3273C03420062B780 /* RealmModel.swift */,
 			);
 			path = Realm;
+			sourceTree = "<group>";
+		};
+		6A353AEC273D3E3A0062B780 /* Toast */ = {
+			isa = PBXGroup;
+			children = (
+				6A353AEA273D38660062B780 /* ToastMessage.swift */,
+			);
+			path = Toast;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
