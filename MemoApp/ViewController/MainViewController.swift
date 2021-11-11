@@ -31,6 +31,9 @@ class MainViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        navigationItem.backBarButtonItem = UIBarButtonItem(
+            title: "메모", style: .plain, target: nil, action: nil)
+        
         memoTableView.reloadData()
         // 데이터베이스에 아무것도 없으면 테이블뷰 실행 X
         guard memoList.count != 0 else { return }
@@ -60,8 +63,6 @@ class MainViewController: UIViewController {
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.title = "0개의 메모"
         
-        navigationItem.backBarButtonItem = UIBarButtonItem(
-            title: "메모", style: .plain, target: nil, action: nil)
     }
 
 }
@@ -105,6 +106,18 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         let sb = UIStoryboard(name: "Content", bundle: nil)
         let vc = sb.instantiateViewController(withIdentifier: "MemoViewController") as! MemoViewController
         
+        let memo = memoList[indexPath.row]
+        
+        vc.memoData = memo
+//         안됨,,(해결해야 할 부분들 5번 참조)
+//         vc.whenYouPressCellAtMainVC()
+        
+
+        
+
+        
+        navigationItem.backBarButtonItem = UIBarButtonItem(
+            title: "검색", style: .plain, target: nil, action: nil)
         
         self.navigationController?.pushViewController(vc, animated: true)
         
@@ -148,6 +161,11 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 2. 셀과 셀사이 보더 왼쪽 마진 때문에 보더라인이 끊겨 있다.
 3. 0번째 섹션의 헤더가 네비게이션바와 너무 붙어있음. -> 헤더의 높이를 가능한 높인 다음, 헤더뷰 내부 패딩값을 줘서 해결
 4. 메모작성이나 수정하고 돌아오면 서치바가 안보인다 테이블뷰를 스크롤해야 다시나옴.
+5. 메모뷰컨트롤러에 텍스트뷰가 분명 존재하는데도 불구하고 메인뷰컨트롤에서 String값을 메모뷰컨트롤러로 넘기는데에 실패함. 자꾸 해당 텍스트뷰가 nil이라고 뜸. 텍스트뷰의 텍스트값이 없어서 그런건가 했지만 그건 또 아님. 텍스트뷰가 없다고 인식하는 듯.
+    
+    테스트로 메모뷰컨트롤러에 텍스트뷰를 코드로 하나 만들었는데 요건 또 정상적으로 인식함.
+ 
+    -> 일단 대안으로 조건문 처리(메모뷰컨 라인 60)
  
  //자꾸 0번째 섹션의 헤더가 잘리게 나와서 만들어준 헤더 뷰. 없으면 헤더가 잘려서 안보인다. 스크롤해야 보임. -> heightForHeaderInSection메서드로 해결.
 

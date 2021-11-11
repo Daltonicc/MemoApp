@@ -27,7 +27,12 @@ class MainTableViewCell: UITableViewCell {
         memoDateLabel.text = row.date
         memoDateLabel.textColor = .systemGray2
         
-        memoContentLabel.text = row.subContent
+        //빈값일 때 표시
+        if row.subContent != "" {
+            memoContentLabel.text = row.subContent
+        } else {
+            memoContentLabel.text = "추가 텍스트 없음"
+        }
         memoContentLabel.textColor = .systemGray2
         
     }

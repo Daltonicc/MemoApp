@@ -14,6 +14,9 @@ class MemoViewController: UIViewController {
     
     let localRealm = try! Realm()
     var memoList: Results<MemoList>!
+    var memoData: MemoList = MemoList(title: "", date: "", subContent: "", favoriteStatus: false)
+    let test = UITextView()
+
     
     
     override func viewDidLoad() {
@@ -23,11 +26,7 @@ class MemoViewController: UIViewController {
         
         
         navigationItemSetting()
-        
-        memoTextView.textContainerInset = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
-        memoTextView.backgroundColor = .black
-        
-        
+        memoTextViewSetting()
         
         
 
@@ -39,7 +38,10 @@ class MemoViewController: UIViewController {
         //키보드 바로 띄워주기
         memoTextView.becomeFirstResponder()
     }
-     
+    
+    
+    // MARK: - Method
+    
     func navigationItemSetting() {
         
         let shareButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(shareButtonClicked))
@@ -47,6 +49,19 @@ class MemoViewController: UIViewController {
         
         navigationItem.rightBarButtonItems = [finishButton, shareButton]
         
+    }
+    
+    func memoTextViewSetting() {
+        
+        memoTextView.textContainerInset = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
+        memoTextView.backgroundColor = .black
+        memoTextView.font = UIFont.systemFont(ofSize: 20)
+        
+        if memoData.title == "" {
+            memoTextView.text = ""
+        } else {
+            memoTextView.text = memoData.title + "\n" + memoData.subContent
+        }
     }
     
     @objc func shareButtonClicked() {
@@ -63,11 +78,11 @@ class MemoViewController: UIViewController {
             var contentForMain = ""
             let favoriteStatus = false
             
-            //추가 텍스트가 없을때 분기처리
+            //추가 텍스트가 없을때 분기처리. 없으면 빈값으로 받아줌
             if textViewArray.count > 1 {
                 contentForMain = String(textViewArray[1])
             } else {
-                contentForMain = "추가 텍스트 없음"
+                contentForMain = ""
             }
             
             let dateFormatter = DateFormatter()
@@ -86,9 +101,16 @@ class MemoViewController: UIViewController {
             
             //텍스트 없을때
         } else {
+            //디비에서 삭제해야함
             print("텍스트 없음")
             self.navigationController?.popViewController(animated: true)
         }
     }
+    
+    //안됨,,(해결해야 할 부분들 5번 참조)
+    func whenYouPressCellAtMainVC() {
+        
+        memoTextView.text = memoData.title + "\n" + memoData.subContent
 
+    }
 }
