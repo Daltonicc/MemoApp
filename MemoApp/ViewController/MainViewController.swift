@@ -18,6 +18,7 @@ class MainViewController: UIViewController {
     let localRealm = try! Realm()
     var memoList: Results<MemoList>!
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -80,7 +81,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if section == 0 {
-            return 1
+            let fixedList = memoList.filter("favoriteStatus == true")
+
+            return fixedList.count
         } else {
             return memoList.count
         }
@@ -95,12 +98,23 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MainTableViewCell.identifier, for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
         
-        //최신 순으로 정렬
+//        let fixedList = memoList.filter("favoriteStatus == true")
+//        let fixedRow = fixedList[indexPath.row]
         let row = memoList.reversed()[indexPath.row]
         
+
         cell.backgroundColor = .darkGray
-        cell.cellconfiguration(row: row)
-    
+
+        if indexPath.section == 0 {
+//            if fixedList.count != 0 {
+//                cell.cellconfiguration(row: fixedRow)
+//            }
+            
+            
+        } else {
+            cell.cellconfiguration(row: row)
+        }
+        
         return cell
     }
     
@@ -109,7 +123,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         let sb = UIStoryboard(name: "Content", bundle: nil)
         let vc = sb.instantiateViewController(withIdentifier: "MemoViewController") as! MemoViewController
         
-        let memo = memoList[indexPath.row]
+        let memo = memoList.reversed()[indexPath.row]
         
         vc.memoData = memo
 //         안됨,,(해결해야 할 부분들 5번 참조)
@@ -128,28 +142,29 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
+        let fixedList = memoList.filter("favoriteStatus == true")
         let row = self.memoList.reversed()[indexPath.row]
         let favoriteAction = UIContextualAction(style: .normal, title: "") { action, view, completionHandler in
             
-            try! self.localRealm.write {
-                
-                if row.favoriteStatus == false {
-                    row.favoriteStatus = true
-                } else {
-                    row.favoriteStatus = false
+            if fixedList.count < 5 {
+                try! self.localRealm.write {
+                    
+                    row.favoriteStatus.toggle()
+                    tableView.reloadData()
                 }
+            } else {
+                showToast(vc: self, message: "메모는 5개이상 불가능!", font: UIFont.systemFont(ofSize: 15))
             }
             completionHandler(true)
         }
         
         favoriteAction.backgroundColor = .systemOrange
         if row.favoriteStatus == true {
-            favoriteAction.image = UIImage(systemName: "pin.fill")
-        } else {
             favoriteAction.image = UIImage(systemName: "pin.slash.fill")
+        } else {
+            favoriteAction.image = UIImage(systemName: "pin.fill")
         }
         
-        tableView.reloadData()
         return UISwipeActionsConfiguration(actions: [favoriteAction])
     }
     
@@ -158,11 +173,21 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         let row = self.memoList.reversed()[indexPath.row]
         let deleteAction = UIContextualAction(style: .destructive, title: "") { action, view, completionHandler in
             
-            try! self.localRealm.write {
+            let alert = UIAlertController(title: "삭제하시겠습니까?", message: "", preferredStyle: .alert)
+            let cancel = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+            let ok = UIAlertAction(title: "확인", style: .default) { _ in
                 
-                self.localRealm.delete(row)
-                tableView.reloadData()
+                try! self.localRealm.write {
+                    
+                    self.localRealm.delete(row)
+                    self.navigationItem.title = "\(self.memoList.count)개의 메모"
+                    tableView.reloadData()
+                }
             }
+            alert.addAction(ok)
+            alert.addAction(cancel)
+            
+            self.present(alert, animated: true, completion: nil)
             
             completionHandler(true)
         }
@@ -172,30 +197,47 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 60
+      
+        //고정된 메모가 없을 때 높이 0으로 설정.
+        let fixedList = memoList.filter("favoriteStatus == true")
+        if section == 0 {
+           if fixedList.count != 0 {
+                return 50
+           } else {
+                return 0
+            }
+        } else {
+            return 50
+        }
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         let headerView = UIView()
         let sectionLabel = UILabel()
+        let fixedList = memoList.filter("favoriteStatus == true")
+
         sectionLabel.font = UIFont.boldSystemFont(ofSize: 25)
         sectionLabel.translatesAutoresizingMaskIntoConstraints = false
 
 
         if section == 0 {
-            sectionLabel.text = "고정된 메모"
-            let _ = headerView.safeAreaLayoutGuide // 이유는 알 수 없지만 해당 상수를 넣지 않으면 처음에는 헤더가 존재하나 스크롤 했다가 돌아오면 헤더가 사라져버린다;
+            if fixedList.count != 0 {
+                sectionLabel.text = "고정된 메모"
+                let _ = headerView.safeAreaLayoutGuide // 이유는 알 수 없지만 해당 상수를 넣지 않으면 처음에는 헤더가 존재하나 스크롤 했다가 돌아오면 헤더가 사라져버린다;
+                headerView.bounds = headerView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0))
+                headerView.addSubview(sectionLabel)
 
-            headerView.bounds = headerView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0))
-            headerView.addSubview(sectionLabel)
-
+                if fixedList.count == 0 {
+                    headerView.isHidden = true
+                }
+            }
             return headerView
         } else {
             sectionLabel.text = "메모"
             let _ = headerView.safeAreaLayoutGuide // 위에 거랑 얘 둘다 없애면 헤더 두 개다 사라짐. 쓰지도 않는데 왜사라지지
                         
-            headerView.bounds = headerView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0))
+            headerView.bounds = headerView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0))
             headerView.addSubview(sectionLabel)
             
             return headerView

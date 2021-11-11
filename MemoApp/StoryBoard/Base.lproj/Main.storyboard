@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3DH-zA-m09">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -47,7 +48,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XVs-J0-dE3">
-                                                    <rect key="frame" x="70" y="51" width="263" height="21"/>
+                                                    <rect key="frame" x="70" y="51" width="242" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="21" id="ZB7-7O-nPr"/>
                                                     </constraints>
@@ -62,6 +63,7 @@
                                                 <constraint firstItem="JNU-j1-PYv" firstAttribute="leading" secondItem="hMJ-0A-1RU" secondAttribute="leadingMargin" id="QDn-YK-Nb5"/>
                                                 <constraint firstItem="JNU-j1-PYv" firstAttribute="top" secondItem="IV9-Ra-fyd" secondAttribute="bottom" constant="8" symbolic="YES" id="SMd-w6-R0n"/>
                                                 <constraint firstItem="IV9-Ra-fyd" firstAttribute="leading" secondItem="hMJ-0A-1RU" secondAttribute="leadingMargin" id="VKK-Cm-W7K"/>
+                                                <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="XVs-J0-dE3" secondAttribute="trailing" constant="10" id="lZ0-qs-559"/>
                                                 <constraint firstItem="XVs-J0-dE3" firstAttribute="top" secondItem="hMJ-0A-1RU" secondAttribute="topMargin" constant="40" id="rkO-Wn-2hx"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -105,7 +107,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="104" y="50"/>
+            <point key="canvasLocation" x="102.89855072463769" y="49.553571428571423"/>
         </scene>
         <!--Content-->
         <scene sceneID="6Us-hW-Zj8">

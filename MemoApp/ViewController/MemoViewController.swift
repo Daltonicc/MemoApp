@@ -23,7 +23,8 @@ class MemoViewController: UIViewController {
         
         navigationItemSetting()
         memoTextViewSetting()
-        
+        memoList = localRealm.objects(MemoList.self)
+
     }
     
     // MARK: - Method
@@ -112,19 +113,29 @@ class MemoViewController: UIViewController {
                 if titleForMain == "" && contentForMain == "" {
                     try! localRealm.write {
                         localRealm.delete(memoData)
+                        print("1")
                     }
-                } else {
+                //기존 메모를 수정할 떄
+                } else if memoData.title != "" {
                     try! localRealm.write {
                         localRealm.delete(memoData)
                         localRealm.add(memo)
+                        print("2")
+                    }
+                //새 메모 작성일 때
+                } else {
+                    try! localRealm.write {
+                        localRealm.add(memo)
+                        print("3")
                     }
                 }
+            //최초 데이터베이스가 전무할 때
             } else {
                 try! localRealm.write {
                     localRealm.add(memo)
+                    print("4")
                 }
             }
-            
             
             self.navigationController?.popViewController(animated: true)
         } else {
