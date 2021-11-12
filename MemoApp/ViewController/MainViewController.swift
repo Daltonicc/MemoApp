@@ -25,7 +25,6 @@ class MainViewController: UIViewController {
         topViewSetting()
         memoTableView.backgroundColor = .black
         memoList = localRealm.objects(MemoList.self)
-    
         
     }
     
@@ -82,10 +81,15 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         if section == 0 {
             let fixedList = memoList.filter("favoriteStatus == true")
+            
+            print(fixedList)
+            print(memoList)
 
             return fixedList.count
         } else {
-            return memoList.count
+            let noFixedList = memoList.filter("favoriteStatus == false")
+            
+            return noFixedList.count
         }
     
     }
@@ -98,21 +102,24 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MainTableViewCell.identifier, for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
         
-//        let fixedList = memoList.filter("favoriteStatus == true")
-//        let fixedRow = fixedList[indexPath.row]
-        let row = memoList.reversed()[indexPath.row]
+        let fixedList = memoList.filter("favoriteStatus == true")
+        let noFixedList = memoList.filter("favoriteStatus == false")
         
-
         cell.backgroundColor = .darkGray
 
         if indexPath.section == 0 {
-//            if fixedList.count != 0 {
-//                cell.cellconfiguration(row: fixedRow)
-//            }
+            if fixedList.count != 0 {
+                let fixedRow = fixedList.reversed()[indexPath.row]
+                cell.cellconfiguration(row: fixedRow)
+            }
             
             
         } else {
-            cell.cellconfiguration(row: row)
+            if noFixedList.count != 0 {
+                let row = noFixedList.reversed()[indexPath.row]
+                cell.cellconfiguration(row: row)
+
+            }
         }
         
         return cell
@@ -123,9 +130,14 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         let sb = UIStoryboard(name: "Content", bundle: nil)
         let vc = sb.instantiateViewController(withIdentifier: "MemoViewController") as! MemoViewController
         
-        let memo = memoList.reversed()[indexPath.row]
+        if indexPath.section == 0 {
+            let memo = memoList.filter("favoriteStatus == true").reversed()[indexPath.row]
+            vc.memoData = memo
+        } else {
+            let memo = memoList.filter("favoriteStatus == false").reversed()[indexPath.row]
+            vc.memoData = memo
+        }
         
-        vc.memoData = memo
 //         안됨,,(해결해야 할 부분들 5번 참조)
 //         vc.whenYouPressCellAtMainVC()
     
@@ -143,14 +155,28 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
         let fixedList = memoList.filter("favoriteStatus == true")
-        let row = self.memoList.reversed()[indexPath.row]
+        let noFixedList = memoList.filter("favoriteStatus == false")
+        
         let favoriteAction = UIContextualAction(style: .normal, title: "") { action, view, completionHandler in
             
             if fixedList.count < 5 {
                 try! self.localRealm.write {
+                    if indexPath.section == 0 {
+                        if fixedList.count != 0 {
+                            let fixedRow = fixedList.reversed()[indexPath.row]
+                            fixedRow.favoriteStatus.toggle()
+                            print("픽스 토글")
+                        }
+                    } else {
+                        if noFixedList.count != 0 {
+                            let row = noFixedList.reversed()[indexPath.row]
+                            row.favoriteStatus.toggle()
+                            print("노픽스 토글")
+                        }
+                    }
                     
-                    row.favoriteStatus.toggle()
                     tableView.reloadData()
+
                 }
             } else {
                 showToast(vc: self, message: "메모는 5개이상 불가능!", font: UIFont.systemFont(ofSize: 15))
@@ -159,10 +185,26 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         favoriteAction.backgroundColor = .systemOrange
-        if row.favoriteStatus == true {
-            favoriteAction.image = UIImage(systemName: "pin.slash.fill")
+        
+        if indexPath.section == 0 {
+            if fixedList.count != 0 {
+                let fixedRow = fixedList.reversed()[indexPath.row]
+                if fixedRow.favoriteStatus == true {
+                    favoriteAction.image = UIImage(systemName: "pin.slash.fill")
+                } else {
+                    favoriteAction.image = UIImage(systemName: "pin.fill")
+                }
+            }
+            
         } else {
-            favoriteAction.image = UIImage(systemName: "pin.fill")
+            if noFixedList.count != 0 {
+                let row = noFixedList.reversed()[indexPath.row]
+                if row.favoriteStatus == true {
+                    favoriteAction.image = UIImage(systemName: "pin.slash.fill")
+                } else {
+                    favoriteAction.image = UIImage(systemName: "pin.fill")
+                }
+            }
         }
         
         return UISwipeActionsConfiguration(actions: [favoriteAction])
@@ -170,7 +212,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
-        let row = self.memoList.reversed()[indexPath.row]
+        let fixedList = memoList.filter("favoriteStatus == true")
+        let noFixedList = memoList.filter("favoriteStatus == false")
+        
         let deleteAction = UIContextualAction(style: .destructive, title: "") { action, view, completionHandler in
             
             let alert = UIAlertController(title: "삭제하시겠습니까?", message: "", preferredStyle: .alert)
@@ -178,10 +222,21 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             let ok = UIAlertAction(title: "확인", style: .default) { _ in
                 
                 try! self.localRealm.write {
-                    
-                    self.localRealm.delete(row)
-                    self.navigationItem.title = "\(self.memoList.count)개의 메모"
+                    if indexPath.section == 0 {
+                        if fixedList.count != 0 {
+                            let fixedRow = fixedList.reversed()[indexPath.row]
+                            self.localRealm.delete(fixedRow)
+                        }
+                    } else {
+                        if noFixedList.count != 0 {
+                            let row = noFixedList.reversed()[indexPath.row]
+                            self.localRealm.delete(row)
+                        
+                        }
+                    }
                     tableView.reloadData()
+                    self.navigationItem.title = "\(self.memoList.count)개의 메모"
+
                 }
             }
             alert.addAction(ok)
@@ -216,6 +271,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         let headerView = UIView()
         let sectionLabel = UILabel()
         let fixedList = memoList.filter("favoriteStatus == true")
+        let noFixedList = memoList.filter("favoriteStatus == false")
 
         sectionLabel.font = UIFont.boldSystemFont(ofSize: 25)
         sectionLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -240,6 +296,10 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             headerView.bounds = headerView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0))
             headerView.addSubview(sectionLabel)
             
+            if noFixedList.count == 0 {
+                headerView.isHidden = true
+            }
+            
             return headerView
         }
     }
@@ -256,6 +316,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
 5. 메모뷰컨트롤러에 텍스트뷰가 분명 존재하는데도 불구하고 메인뷰컨트롤에서 String값을 메모뷰컨트롤러로 넘기는데에 실패함. 자꾸 해당 텍스트뷰가 nil이라고 뜸. 텍스트뷰의 텍스트값이 없어서 그런건가 했지만 그건 또 아님. 텍스트뷰가 없다고 인식하는 듯.
 6. 텍스트뷰에서 아무내용도 수정하지 않은 상태에서 백버튼을 클릭하면 alert을 띄워주려고 했다. 그런데 작동안하길래 구글링 해보니 백버튼에는 액션을 넣어줄 수 없다고 한다. 그러면 백버튼 액션으로 수정된 텍스트뷰를 저장하는 것이 불가능하지 않나?
+7. 리딩 스와이프 관련해서 너무 시간 잡아먹어서(한 5시간 쓴듯) 스트레스 너무 받았지만 정말 단순한 문제였어서 후련한데 허탈.
     
     테스트로 메모뷰컨트롤러에 텍스트뷰를 코드로 하나 만들었는데 요건 또 정상적으로 인식함.
  

@@ -24,17 +24,17 @@ class MainTableViewCell: UITableViewCell {
         memoTitleLabel.text = row.title
         memoTitleLabel.font = UIFont.boldSystemFont(ofSize: 20)
         
-        guard let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Date()) else { return }
-        
-        let dateStr = row.date
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-        
-        let convertDate = dateFormatter.date(from: dateStr)
-        
-        let mydateFormatter = DateFormatter()
-        mydateFormatter.dateFormat = "a hh:mm"
-        let convertStr = mydateFormatter.string(from: convertDate!)
+//        guard let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Date()) else { return }
+//        
+//        let dateStr = row.date
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+//        
+//        let convertDate = dateFormatter.date(from: dateStr)
+//        
+//        let mydateFormatter = DateFormatter()
+//        mydateFormatter.dateFormat = "a hh:mm"
+//        let convertStr = mydateFormatter.string(from: convertDate!)
         
         
         memoDateLabel.text = row.date
