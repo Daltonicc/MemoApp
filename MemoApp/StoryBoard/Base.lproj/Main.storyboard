@@ -77,14 +77,20 @@
                             </tableView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" semanticContentAttribute="playback" translatesAutoresizingMaskIntoConstraints="NO" id="bCL-vu-eh7">
                                 <rect key="frame" x="0.0" y="813" width="414" height="49"/>
+                                <color key="backgroundColor" systemColor="systemGray2Color"/>
                                 <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="sYF-LS-5fy"/>
                                     <barButtonItem title="Item" id="EUX-Uc-YYF">
                                         <imageReference key="image" image="square.and.pencil" catalog="system" symbolScale="large"/>
+                                        <color key="tintColor" systemColor="systemOrangeColor"/>
                                         <connections>
                                             <segue destination="sxT-mp-agA" kind="show" id="CTL-pG-aXA"/>
                                         </connections>
                                     </barButtonItem>
                                 </items>
+                                <toolbarAppearance key="standardAppearance">
+                                    <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </toolbarAppearance>
                             </toolbar>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -146,6 +152,9 @@
         <image name="square.and.pencil" catalog="system" width="128" height="115"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray2Color">
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemOrangeColor">
             <color red="1" green="0.58431372549019611" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

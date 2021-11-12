@@ -15,14 +15,23 @@ class MainViewController: UIViewController {
     @IBOutlet weak var memoTableView: UITableView!
     @IBOutlet weak var bottomToolBar: UIToolbar!
     
+    var showViewControllerOnce: Bool = false
     let localRealm = try! Realm()
     var memoList: Results<MemoList>!
     var searchFilterList: Results<MemoList>!
+    var isFiltering: Bool {
+        let searchController = self.navigationItem.searchController
+        let isActive = searchController?.isActive ?? false
+        let searchbarText = searchController?.searchBar.text?.isEmpty == false
+        return isActive && searchbarText
+        
+    }
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        firstVC()
         topViewSetting()
         memoTableView.backgroundColor = .black
         memoList = localRealm.objects(MemoList.self)
@@ -49,6 +58,21 @@ class MainViewController: UIViewController {
     
     // MARK: - Method
 
+    func firstVC() {
+        
+        let sb = UIStoryboard(name: "FirstScreen", bundle: nil)
+        let vc = sb.instantiateViewController(withIdentifier: "WalkthroughViewController") as! WalkthroughViewController
+        
+        vc.modalPresentationStyle = .overFullScreen
+        vc.modalTransitionStyle = .crossDissolve
+        
+        present(vc, animated: true, completion: nil)
+        
+        showViewControllerOnce = true
+    }
+    
+    
+    
     func topViewSetting() {
         
         view.backgroundColor = .darkGray
@@ -81,12 +105,16 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if section == 0 {
-            let fixedList = memoList.filter("favoriteStatus == true")
-            return fixedList.count
+        if self.isFiltering {
+            return section == 0 ? searchFilterList.count : 0
         } else {
-            let noFixedList = memoList.filter("favoriteStatus == false")
-            return noFixedList.count
+            if section == 0 {
+                let fixedList = memoList.filter("favoriteStatus == true")
+                return fixedList.count
+            } else {
+                let noFixedList = memoList.filter("favoriteStatus == false")
+                return noFixedList.count
+            }
         }
     }
     
@@ -103,21 +131,25 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         cell.backgroundColor = .darkGray
 
-        if indexPath.section == 0 {
-            if fixedList.count != 0 {
-                let fixedRow = fixedList.reversed()[indexPath.row]
-                cell.cellconfiguration(row: fixedRow)
+        if self.isFiltering {
+            if indexPath.section == 0 {
+                let filterRow = searchFilterList.reversed()[indexPath.row]
+                
+                cell.cellconfiguration(row: filterRow)
             }
-            
-            
         } else {
-            if noFixedList.count != 0 {
-                let row = noFixedList.reversed()[indexPath.row]
-                cell.cellconfiguration(row: row)
-
+            if indexPath.section == 0 {
+                if fixedList.count != 0 {
+                    let fixedRow = fixedList.reversed()[indexPath.row]
+                    cell.cellconfiguration(row: fixedRow)
+                }
+            } else {
+                if noFixedList.count != 0 {
+                    let row = noFixedList.reversed()[indexPath.row]
+                    cell.cellconfiguration(row: row)
+                }
             }
         }
-        
         return cell
     }
     
@@ -126,17 +158,21 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         let sb = UIStoryboard(name: "Content", bundle: nil)
         let vc = sb.instantiateViewController(withIdentifier: "MemoViewController") as! MemoViewController
         
-        if indexPath.section == 0 {
-            let memo = memoList.filter("favoriteStatus == true").reversed()[indexPath.row]
-            vc.memoData = memo
+        if self.isFiltering {
+            if indexPath.section == 0 {
+                let memo = searchFilterList.reversed()[indexPath.row]
+                vc.memoData = memo
+            }
         } else {
-            let memo = memoList.filter("favoriteStatus == false").reversed()[indexPath.row]
-            vc.memoData = memo
+            if indexPath.section == 0 {
+                let memo = memoList.filter("favoriteStatus == true").reversed()[indexPath.row]
+                vc.memoData = memo
+            } else {
+                let memo = memoList.filter("favoriteStatus == false").reversed()[indexPath.row]
+                vc.memoData = memo
+            }
         }
         
-//         안됨,,(해결해야 할 부분들 5번 참조)
-//         vc.whenYouPressCellAtMainVC()
-    
         //셀을 클릭해서 넘어갈 경우 백바버튼아이템 타이틀 변경.
         navigationItem.backBarButtonItem = UIBarButtonItem(
             title: "검색", style: .plain, target: nil, action: nil)
@@ -161,18 +197,14 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                         if fixedList.count != 0 {
                             let fixedRow = fixedList.reversed()[indexPath.row]
                             fixedRow.favoriteStatus.toggle()
-                            print("픽스 토글")
                         }
                     } else {
                         if noFixedList.count != 0 {
                             let row = noFixedList.reversed()[indexPath.row]
                             row.favoriteStatus.toggle()
-                            print("노픽스 토글")
                         }
                     }
-                    
                     tableView.reloadData()
-
                 }
             } else {
                 showToast(vc: self, message: "메모는 5개이상 불가능!", font: UIFont.systemFont(ofSize: 15))
@@ -191,7 +223,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                     favoriteAction.image = UIImage(systemName: "pin.fill")
                 }
             }
-            
         } else {
             if noFixedList.count != 0 {
                 let row = noFixedList.reversed()[indexPath.row]
@@ -272,8 +303,16 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         sectionLabel.font = UIFont.boldSystemFont(ofSize: 25)
         sectionLabel.translatesAutoresizingMaskIntoConstraints = false
 
-
-        if section == 0 {
+        if self.isFiltering {
+            if section == 0 {
+                sectionLabel.text = "\(searchFilterList.count)개 찾음"
+                let _ = headerView.safeAreaLayoutGuide
+                headerView.bounds = headerView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0))
+                headerView.addSubview(sectionLabel)
+            }
+            return headerView
+            
+        } else if section == 0 {
             if fixedList.count != 0 {
                 sectionLabel.text = "고정된 메모"
                 let _ = headerView.safeAreaLayoutGuide // 이유는 알 수 없지만 해당 상수를 넣지 않으면 처음에는 헤더가 존재하나 스크롤 했다가 돌아오면 헤더가 사라져버린다;
@@ -285,6 +324,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             }
             return headerView
+            
         } else {
             sectionLabel.text = "메모"
             let _ = headerView.safeAreaLayoutGuide // 위에 거랑 얘 둘다 없애면 헤더 두 개다 사라짐. 쓰지도 않는데 왜사라지지
@@ -306,8 +346,12 @@ extension MainViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         
         guard let text = searchController.searchBar.text?.lowercased() else { return }
-        self.searchFilterList = self.memoList.filter("title == '\(text)' OR subContent == '\(text)'")
-        dump(searchFilterList)
+        
+        //서치뷰 필터처리
+        self.searchFilterList = self.memoList.where {
+            ($0.title.contains(text) || $0.subContent.contains(text))
+        }
+        self.memoTableView.reloadData()
     
     }
 }
@@ -328,6 +372,8 @@ extension MainViewController: UISearchResultsUpdating {
  
  6. 텍스트뷰에서 아무내용도 수정하지 않은 상태에서 백버튼을 클릭하면 alert을 띄워주려고 했다. 그런데 작동안하길래 구글링 해보니 백버튼에는 액션을 넣어줄 수 없다고 한다. 그러면 백버튼 액션으로 수정된 텍스트뷰를 저장하는 것이 불가능하지 않나?
  7. 리딩 스와이프 관련해서 너무 시간 잡아먹어서(한 5시간 쓴듯) 스트레스 너무 받았지만 정말 단순한 문제였어서 후련한데 허탈.
+ 8. 서치뷰 필터처리관련해서 NSPredicate로는 제한사항이 존재했고 관련 내용 구글링 중, Realm Swift 10.19 버전이 최근에 나온거 확인 후 관련 메서드를 이용. 서치뷰 필터처리를 손쉽게 할 수 있었다.
+ 9. 날짜, 넘버 포메터 구현해야함.
 
  //자꾸 0번째 섹션의 헤더가 잘리게 나와서 만들어준 헤더 뷰. 없으면 헤더가 잘려서 안보인다. 스크롤해야 보임. -> heightForHeaderInSection메서드로 해결.
 
