@@ -31,6 +31,7 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
         firstVC()
         topViewSetting()
         memoTableView.backgroundColor = .black
@@ -60,15 +61,22 @@ class MainViewController: UIViewController {
 
     func firstVC() {
         
-        let sb = UIStoryboard(name: "FirstScreen", bundle: nil)
-        let vc = sb.instantiateViewController(withIdentifier: "WalkthroughViewController") as! WalkthroughViewController
+        let nowStatus = UserDefaults.standard.bool(forKey: "showOnce")
+        if nowStatus == false {
+            
+            let sb = UIStoryboard(name: "FirstScreen", bundle: nil)
+            let vc = sb.instantiateViewController(withIdentifier: "WalkthroughViewController") as! WalkthroughViewController
+            
+            vc.modalPresentationStyle = .overFullScreen
+            vc.modalTransitionStyle = .crossDissolve
+            
+            present(vc, animated: true, completion: nil)
+            
+            showViewControllerOnce = true
+            UserDefaults.standard.set(showViewControllerOnce, forKey: "showOnce")
+        }
+
         
-        vc.modalPresentationStyle = .overFullScreen
-        vc.modalTransitionStyle = .crossDissolve
-        
-        present(vc, animated: true, completion: nil)
-        
-        showViewControllerOnce = true
     }
     
     
