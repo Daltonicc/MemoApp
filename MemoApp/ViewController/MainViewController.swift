@@ -55,8 +55,6 @@ class MainViewController: UIViewController {
         
     }
     
-    
-    
     // MARK: - Method
 
     func firstVC() {
@@ -75,12 +73,8 @@ class MainViewController: UIViewController {
             showViewControllerOnce = true
             UserDefaults.standard.set(showViewControllerOnce, forKey: "showOnce")
         }
-
-        
     }
-    
-    
-    
+
     func topViewSetting() {
         
         view.backgroundColor = .darkGray
@@ -97,10 +91,7 @@ class MainViewController: UIViewController {
         self.navigationItem.searchController = searchController
         self.navigationItem.hidesSearchBarWhenScrolling = false
         self.navigationController?.navigationBar.prefersLargeTitles = true
-        
-        
     }
-    
 }
 
 // MARK: - Extension(TableView)
@@ -180,16 +171,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 vc.memoData = memo
             }
         }
-        
         //셀을 클릭해서 넘어갈 경우 백바버튼아이템 타이틀 변경.
         navigationItem.backBarButtonItem = UIBarButtonItem(
             title: "검색", style: .plain, target: nil, action: nil)
-        
         self.navigationController?.pushViewController(vc, animated: true)
-        
         //회색표시 없애기
         tableView.deselectRow(at: indexPath, animated: true)
-        
     }
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -364,15 +351,15 @@ extension MainViewController: UISearchResultsUpdating {
     }
 }
 
-/* 해결해야 할 부분들
- 
+/* 해결해야 할 부분 및 정리
+
+총 소요시간: 31시간(제출일 6시 기준 아직 미완성,,)
 1. 섹션 헤더의 좌측 마진값을 없애고 싶은데 아직 해결못함. -> 해결 viewForHeaderInSection 메서드 이용. 헤더뷰를 따로 만들어줌.
     헤더뷰 위에 마진값 줘야함.
 2. 셀과 셀사이 보더 왼쪽 마진 때문에 보더라인이 끊겨 있다.
 3. 0번째 섹션의 헤더가 네비게이션바와 너무 붙어있음. -> 헤더의 높이를 가능한 높인 다음, 헤더뷰 내부 패딩값을 줘서 해결
 4. 메모작성이나 수정하고 돌아오면 서치바가 안보인다 테이블뷰를 스크롤해야 다시나옴. (해결)
     -> self.navigationItem.hidesSearchBarWhenScrolling = false 하니까 다른 뷰 갔다와도 잘 보인다! 근데 이 메서드는 테이블뷰 스크롤할때 계속 서치바가 보여주게끔 하는 메서드인데 내가 겪은 이슈랑 무슨 상관이 있는지는 아직 모르겠음.
-
 5. 메모뷰컨트롤러에 텍스트뷰가 분명 존재하는데도 불구하고 메인뷰컨트롤에서 String값을 메모뷰컨트롤러로 넘기는데에 실패함. 자꾸 해당 텍스트뷰가 nil이라고 뜸. 텍스트뷰의 텍스트값이 없어서 그런건가 했지만 그건 또 아님. 텍스트뷰가 없다고 인식하는 듯.
     
     테스트로 메모뷰컨트롤러에 텍스트뷰를 코드로 하나 만들었는데 요건 또 정상적으로 인식함.
@@ -382,6 +369,7 @@ extension MainViewController: UISearchResultsUpdating {
  7. 리딩 스와이프 관련해서 너무 시간 잡아먹어서(한 5시간 쓴듯) 스트레스 너무 받았지만 정말 단순한 문제였어서 후련한데 허탈.
  8. 서치뷰 필터처리관련해서 NSPredicate로는 제한사항이 존재했고 관련 내용 구글링 중, Realm Swift 10.19 버전이 최근에 나온거 확인 후 관련 메서드를 이용. 서치뷰 필터처리를 손쉽게 할 수 있었다.
  9. 날짜, 넘버 포메터 구현해야함.
+ 10. 검색화면에서 리딩스와이프, 트레일링 스와이프 미구현. 텍스트컬러 변경 미구현.
 
  //자꾸 0번째 섹션의 헤더가 잘리게 나와서 만들어준 헤더 뷰. 없으면 헤더가 잘려서 안보인다. 스크롤해야 보임. -> heightForHeaderInSection메서드로 해결.
 
