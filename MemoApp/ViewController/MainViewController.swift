@@ -17,6 +17,7 @@ class MainViewController: UIViewController {
     
     let localRealm = try! Realm()
     var memoList: Results<MemoList>!
+    var searchFilterList: Results<MemoList>!
     
     
     override func viewDidLoad() {
@@ -58,12 +59,13 @@ class MainViewController: UIViewController {
         insideSearchBar?.textColor = .white
         insideSearchBar?.backgroundColor = .systemGray
         searchController.searchBar.placeholder = "검색"
+        searchController.searchResultsUpdater = self
         
-        self.navigationItem.searchController = searchController
-        self.navigationItem.hidesSearchBarWhenScrolling = false 
-
-        self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.title = "0개의 메모"
+        self.navigationItem.searchController = searchController
+        self.navigationItem.hidesSearchBarWhenScrolling = false
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        
         
     }
     
@@ -81,17 +83,11 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         if section == 0 {
             let fixedList = memoList.filter("favoriteStatus == true")
-            
-            print(fixedList)
-            print(memoList)
-
             return fixedList.count
         } else {
             let noFixedList = memoList.filter("favoriteStatus == false")
-            
             return noFixedList.count
         }
-    
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -305,6 +301,17 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+extension MainViewController: UISearchResultsUpdating {
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        
+        guard let text = searchController.searchBar.text?.lowercased() else { return }
+        self.searchFilterList = self.memoList.filter("title == '\(text)' OR subContent == '\(text)'")
+        dump(searchFilterList)
+    
+    }
+}
+
 /* 해결해야 할 부분들
  
 1. 섹션 헤더의 좌측 마진값을 없애고 싶은데 아직 해결못함. -> 해결 viewForHeaderInSection 메서드 이용. 헤더뷰를 따로 만들어줌.
@@ -315,13 +322,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     -> self.navigationItem.hidesSearchBarWhenScrolling = false 하니까 다른 뷰 갔다와도 잘 보인다! 근데 이 메서드는 테이블뷰 스크롤할때 계속 서치바가 보여주게끔 하는 메서드인데 내가 겪은 이슈랑 무슨 상관이 있는지는 아직 모르겠음.
 
 5. 메모뷰컨트롤러에 텍스트뷰가 분명 존재하는데도 불구하고 메인뷰컨트롤에서 String값을 메모뷰컨트롤러로 넘기는데에 실패함. 자꾸 해당 텍스트뷰가 nil이라고 뜸. 텍스트뷰의 텍스트값이 없어서 그런건가 했지만 그건 또 아님. 텍스트뷰가 없다고 인식하는 듯.
-6. 텍스트뷰에서 아무내용도 수정하지 않은 상태에서 백버튼을 클릭하면 alert을 띄워주려고 했다. 그런데 작동안하길래 구글링 해보니 백버튼에는 액션을 넣어줄 수 없다고 한다. 그러면 백버튼 액션으로 수정된 텍스트뷰를 저장하는 것이 불가능하지 않나?
-7. 리딩 스와이프 관련해서 너무 시간 잡아먹어서(한 5시간 쓴듯) 스트레스 너무 받았지만 정말 단순한 문제였어서 후련한데 허탈.
     
     테스트로 메모뷰컨트롤러에 텍스트뷰를 코드로 하나 만들었는데 요건 또 정상적으로 인식함.
+    -> 일단 대안으로 조건문 처리(메모뷰컨트롤러 Line 140)
  
-    -> 일단 대안으로 조건문 처리(메모뷰컨 라인 60)
- 
+ 6. 텍스트뷰에서 아무내용도 수정하지 않은 상태에서 백버튼을 클릭하면 alert을 띄워주려고 했다. 그런데 작동안하길래 구글링 해보니 백버튼에는 액션을 넣어줄 수 없다고 한다. 그러면 백버튼 액션으로 수정된 텍스트뷰를 저장하는 것이 불가능하지 않나?
+ 7. 리딩 스와이프 관련해서 너무 시간 잡아먹어서(한 5시간 쓴듯) 스트레스 너무 받았지만 정말 단순한 문제였어서 후련한데 허탈.
+
  //자꾸 0번째 섹션의 헤더가 잘리게 나와서 만들어준 헤더 뷰. 없으면 헤더가 잘려서 안보인다. 스크롤해야 보임. -> heightForHeaderInSection메서드로 해결.
 
 */
