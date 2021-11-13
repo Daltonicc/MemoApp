@@ -71,7 +71,7 @@ class MainViewController: UIViewController {
             present(vc, animated: true, completion: nil)
             
             showViewControllerOnce = true
-//            UserDefaults.standard.set(showViewControllerOnce, forKey: "showOnce")
+            UserDefaults.standard.set(showViewControllerOnce, forKey: "showOnce")
         }
     }
 
