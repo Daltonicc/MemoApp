@@ -71,7 +71,7 @@ class MainViewController: UIViewController {
             present(vc, animated: true, completion: nil)
             
             showViewControllerOnce = true
-            UserDefaults.standard.set(showViewControllerOnce, forKey: "showOnce")
+//            UserDefaults.standard.set(showViewControllerOnce, forKey: "showOnce")
         }
     }
 
@@ -363,14 +363,11 @@ extension MainViewController: UISearchResultsUpdating {
 5. 메모뷰컨트롤러에 텍스트뷰가 분명 존재하는데도 불구하고 메인뷰컨트롤에서 String값을 메모뷰컨트롤러로 넘기는데에 실패함. 자꾸 해당 텍스트뷰가 nil이라고 뜸. 텍스트뷰의 텍스트값이 없어서 그런건가 했지만 그건 또 아님. 텍스트뷰가 없다고 인식하는 듯.
     
     테스트로 메모뷰컨트롤러에 텍스트뷰를 코드로 하나 만들었는데 요건 또 정상적으로 인식함.
-    -> 일단 대안으로 조건문 처리(메모뷰컨트롤러 Line 140)
+    -> 일단 대안으로 조건문 처리
  
  6. 텍스트뷰에서 아무내용도 수정하지 않은 상태에서 백버튼을 클릭하면 alert을 띄워주려고 했다. 그런데 작동안하길래 구글링 해보니 백버튼에는 액션을 넣어줄 수 없다고 한다. 그러면 백버튼 액션으로 수정된 텍스트뷰를 저장하는 것이 불가능하지 않나?
  7. 리딩 스와이프 관련해서 너무 시간 잡아먹어서(한 5시간 쓴듯) 스트레스 너무 받았지만 정말 단순한 문제였어서 후련한데 허탈.
  8. 서치뷰 필터처리관련해서 NSPredicate로는 제한사항이 존재했고 관련 내용 구글링 중, Realm Swift 10.19 버전이 최근에 나온거 확인 후 관련 메서드를 이용. 서치뷰 필터처리를 손쉽게 할 수 있었다.
  9. 날짜, 넘버 포메터 구현해야함.
  10. 검색화면에서 리딩스와이프, 트레일링 스와이프 미구현. 텍스트컬러 변경 미구현.
-
- //자꾸 0번째 섹션의 헤더가 잘리게 나와서 만들어준 헤더 뷰. 없으면 헤더가 잘려서 안보인다. 스크롤해야 보임. -> heightForHeaderInSection메서드로 해결.
-
 */

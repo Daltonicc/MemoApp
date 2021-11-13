@@ -99,6 +99,7 @@ class MemoViewController: UIViewController {
                 contentForMain = String(textViewArray[1])
             }
             
+            // 익스텐션으로 처리 calendar.current.date(bool) 오전 오후 datecomponent weekofmonth string
             let dateFormatter = DateFormatter()
             dateFormatter.timeZone = TimeZone(abbreviation: "KST")
             dateFormatter.locale = Locale(identifier: "ko_KR")
