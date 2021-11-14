@@ -23,21 +23,8 @@ class MainTableViewCell: UITableViewCell {
         
         memoTitleLabel.text = row.title
         memoTitleLabel.font = UIFont.boldSystemFont(ofSize: 20)
-        
-//        guard let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Date()) else { return }
-//        
-//        let dateStr = row.date
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-//        
-//        let convertDate = dateFormatter.date(from: dateStr)
-//        
-//        let mydateFormatter = DateFormatter()
-//        mydateFormatter.dateFormat = "a hh:mm"
-//        let convertStr = mydateFormatter.string(from: convertDate!)
-        
-        
-        memoDateLabel.text = row.date
+
+        memoDateLabel.text = dateFormatting(date: row.date)
         memoDateLabel.textColor = .systemGray2
         
         //빈값일 때 표시
@@ -47,6 +34,20 @@ class MainTableViewCell: UITableViewCell {
             memoContentLabel.text = "추가 텍스트 없음"
         }
         memoContentLabel.textColor = .systemGray2
+        
+    }
+    
+    func dateFormatting(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        if Calendar.current.isDateInToday(date) {
+          dateFormatter.dateFormat = "a HH:mm"
+        } else if date >= Date(timeIntervalSinceNow: 60 * 60 * 24 * -7) {
+          dateFormatter.dateFormat = "EEEE"
+        } else {
+          dateFormatter.dateFormat = "yyyy. MM. dd. a hh:mm"
+        }
+        dateFormatter.locale = .init(identifier: "ko_KR")
+        return dateFormatter.string(from: date)
         
     }
 

@@ -14,7 +14,7 @@ class MemoViewController: UIViewController {
     
     let localRealm = try! Realm()
     var memoList: Results<MemoList>!
-    var memoData: MemoList = MemoList(title: "", date: "", subContent: "", favoriteStatus: false)
+    var memoData: MemoList = MemoList(title: "", date: Date(), subContent: "", favoriteStatus: false)
     var willShowToken: NSObjectProtocol?
     var willHideToken: NSObjectProtocol?
     
@@ -129,7 +129,7 @@ class MemoViewController: UIViewController {
     @objc func finishButtonClicked() {
         
         if let text = memoTextView.text {
-            //타이틀값 얻으려고 줄단위로 자른 배열 생성. 첫째 줄만 잘라서 변수에 담아볼랬는데 못찾음(문자열 관련 공부 필요) 추후에 방법 찾으면 개선
+            //타이틀값 얻으려고 줄단위로 자른 배열 생성. 첫째 줄만 잘라서 변수에 담아볼랬는데 못찾음(문자열 관련 공부 필요) 추후에 방법 찾으면 개선 (해결) -> 9번 참고
             let textViewArray = text.split(separator: "\n")
             var titleForMain = ""
             var contentForMain = ""
@@ -144,15 +144,8 @@ class MemoViewController: UIViewController {
             if textViewArray.count > 1 {
                 contentForMain = String(textViewArray[1])
             }
-            
-            // 익스텐션으로 처리 calendar.current.date(bool) 오전 오후 datecomponent weekofmonth string
-            let dateFormatter = DateFormatter()
-            dateFormatter.timeZone = TimeZone(abbreviation: "KST")
-            dateFormatter.locale = Locale(identifier: "ko_KR")
-            dateFormatter.dateFormat = "yyyy.MM.dd a HH:mm"
-            let dateForMain = dateFormatter.string(from: nowDate)
                         
-            let memo = MemoList(title: String(titleForMain), date: dateForMain, subContent: String(contentForMain), favoriteStatus: favoriteStatus)
+            let memo = MemoList(title: String(titleForMain), date: nowDate, subContent: String(contentForMain), favoriteStatus: favoriteStatus)
             
             //초기 데이터베이스에 아무것도 없을 때 처리.
             if memoList != nil {
