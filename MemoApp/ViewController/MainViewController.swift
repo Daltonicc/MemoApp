@@ -24,7 +24,6 @@ class MainViewController: UIViewController {
         let isActive = searchController?.isActive ?? false
         let searchbarText = searchController?.searchBar.text?.isEmpty == false
         return isActive && searchbarText
-        
     }
     
     override func viewDidLoad() {

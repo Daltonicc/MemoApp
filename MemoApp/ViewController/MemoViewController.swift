@@ -176,14 +176,12 @@ class MemoViewController: UIViewController {
                     print("4")
                 }
             }
-            
             self.navigationController?.popViewController(animated: true)
         } else {
             print("텍스트 없음")
             self.navigationController?.popViewController(animated: true)
         }
     }
-    
     //안됨,,(해결해야 할 부분들 5번 참조)
     func whenYouPressCellAtMainVC() {
         

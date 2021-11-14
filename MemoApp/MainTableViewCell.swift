@@ -38,6 +38,7 @@ class MainTableViewCell: UITableViewCell {
     }
     
     func dateFormatting(date: Date) -> String {
+        
         let dateFormatter = DateFormatter()
         if Calendar.current.isDateInToday(date) {
           dateFormatter.dateFormat = "a HH:mm"
@@ -48,9 +49,5 @@ class MainTableViewCell: UITableViewCell {
         }
         dateFormatter.locale = .init(identifier: "ko_KR")
         return dateFormatter.string(from: date)
-        
     }
-
-
-
 }
