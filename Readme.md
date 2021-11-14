@@ -1,8 +1,6 @@
-## iPhone 8
-https://user-images.githubusercontent.com/87598209/141441368-91ff7de2-ff1a-480b-85e2-8efd46b89639.mp4
+## [iPhone 8](https://youtu.be/m6JXry6VGYE)
 
-## iPhone 13 Pro Max
-https://user-images.githubusercontent.com/87598209/141441335-b0df3db2-e4d4-47a5-ab24-7b80cf8bbf20.mp4
+## [iPhone 13 Pro Max](https://youtu.be/x4tJZCTSey4)
 
 ## 해결해야 할 부분 및 정리
 총 소요시간: 31시간(제출일 6시 기준) + 5시간(11.14 미구현 기능 구현 및 에러 해결) = 36시간
