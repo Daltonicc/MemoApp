@@ -31,7 +31,6 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         firstVC()
         topViewSetting()
         memoTableView.backgroundColor = .black
@@ -253,12 +252,10 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                         if noFixedList.count != 0 {
                             let row = noFixedList.reversed()[indexPath.row]
                             self.localRealm.delete(row)
-                        
                         }
                     }
                     tableView.reloadData()
                     self.navigationItem.title = "\(self.memoList.count)개의 메모"
-
                 }
             }
             alert.addAction(ok)
@@ -323,14 +320,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         } else {
             sectionLabel.text = "메모"
             let _ = headerView.safeAreaLayoutGuide // 위에 거랑 얘 둘다 없애면 헤더 두 개다 사라짐. 쓰지도 않는데 왜사라지지
-                        
             headerView.bounds = headerView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0))
             headerView.addSubview(sectionLabel)
             
             if noFixedList.count == 0 {
                 headerView.isHidden = true
             }
-            
             return headerView
         }
     }
@@ -370,4 +365,5 @@ extension MainViewController: UISearchResultsUpdating {
  8. 서치뷰 필터처리관련해서 NSPredicate로는 제한사항이 존재했고 관련 내용 구글링 중, Realm Swift 10.19 버전이 최근에 나온거 확인 후 관련 메서드를 이용. 서치뷰 필터처리를 손쉽게 할 수 있었다.
  9. 날짜, 넘버 포메터 구현해야함.
  10. 검색화면에서 리딩스와이프, 트레일링 스와이프 미구현. 텍스트컬러 변경 미구현.
+ 11. 키보드노티피케이션을 통해 텍스트뷰의 높이가 자동 조절이 되게끔 구현해줬다. 그런데 스크롤하게 되면 네비게이션바의 백그라운드 컬러와 높이가 바뀌는 현상이 존재한다.
 */

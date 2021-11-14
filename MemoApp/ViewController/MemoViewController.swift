@@ -15,6 +15,18 @@ class MemoViewController: UIViewController {
     let localRealm = try! Realm()
     var memoList: Results<MemoList>!
     var memoData: MemoList = MemoList(title: "", date: "", subContent: "", favoriteStatus: false)
+    var willShowToken: NSObjectProtocol?
+    var willHideToken: NSObjectProtocol?
+    
+    deinit {
+        if let token = willShowToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        
+        if let token = willHideToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +36,7 @@ class MemoViewController: UIViewController {
         navigationItemSetting()
         memoTextViewSetting()
         memoList = localRealm.objects(MemoList.self)
+        keyboardNotification()
 
     }
     
@@ -52,6 +65,39 @@ class MemoViewController: UIViewController {
         }
     }
     
+    func keyboardNotification() {
+        
+        willShowToken = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: OperationQueue.main, using: { [weak self] (noti) in
+            
+            guard let strongSelf = self else { return }
+            
+            if let frame = noti.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+                let height = frame.cgRectValue.height
+                
+                var inset = strongSelf.memoTextView.contentInset
+                inset.bottom = height
+                strongSelf.memoTextView.contentInset = inset
+                
+                inset = strongSelf.memoTextView.verticalScrollIndicatorInsets
+                inset.bottom = height
+                strongSelf.memoTextView.verticalScrollIndicatorInsets = inset
+            }
+            
+        })
+        
+        willHideToken = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: OperationQueue.main, using: { [weak self] (noti) in
+            
+            guard let strongSelf = self else { return }
+            
+            var inset = strongSelf.memoTextView.contentInset
+            inset.bottom = 0
+            strongSelf.memoTextView.contentInset = inset
+            
+            inset = strongSelf.memoTextView.verticalScrollIndicatorInsets
+            inset.bottom = 9
+            strongSelf.memoTextView.verticalScrollIndicatorInsets = inset
+        })
+    }
     
     @objc func shareButtonClicked() {
         
