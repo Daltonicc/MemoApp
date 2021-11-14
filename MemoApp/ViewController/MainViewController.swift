@@ -140,6 +140,19 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             if indexPath.section == 0 {
                 let filterRow = searchFilterList.reversed()[indexPath.row]
                 cell.cellconfiguration(row: filterRow)
+                
+                let searchBarText = self.navigationItem.searchController?.searchBar.text ?? ""
+                let searchTitle = NSMutableAttributedString(string: filterRow.title)
+                let searchContent = NSMutableAttributedString(string: filterRow.subContent)
+                
+                let titleRange = (filterRow.title as NSString).range(of: searchBarText, options: .caseInsensitive)
+                let contentRange = (filterRow.subContent as NSString).range(of: searchBarText, options: .caseInsensitive)
+                
+                searchTitle.addAttribute(.foregroundColor, value: UIColor.orange, range: titleRange)
+                searchContent.addAttribute(.foregroundColor, value: UIColor.orange, range: contentRange)
+                
+                cell.memoTitleLabel.attributedText = searchTitle
+                cell.memoContentLabel.attributedText = searchContent
             }
         } else {
             if indexPath.section == 0 {
@@ -388,8 +401,11 @@ extension MainViewController: UISearchResultsUpdating {
     
     테스트로 메모뷰컨트롤러에 텍스트뷰를 코드로 하나 만들었는데 요건 또 정상적으로 인식함.
     -> 일단 대안으로 조건문 처리
+    원인: 메모뷰컨트롤러에서 해당 텍스트뷰의 인스턴스가 생성되기 전에 데이터를 넘겨주려다 보니 문제가 생긴 것.
+  
  
  6. 텍스트뷰에서 아무내용도 수정하지 않은 상태에서 백버튼을 클릭하면 alert을 띄워주려고 했다. 그런데 작동안하길래 구글링 해보니 백버튼에는 액션을 넣어줄 수 없다고 한다. 그러면 백버튼 액션으로 수정된 텍스트뷰를 저장하는 것이 불가능하지 않나?
+ -> 대안: 뷰컨트롤러의 생명주기 활용. viewdiddisappear일 때 저장되게끔 코드 구현하면 될 듯.
  7. 리딩 스와이프 관련해서(indexPath가 엉켰다) 너무 시간 잡아먹어서(한 5시간 쓴듯) 스트레스 너무 받았지만 정말 단순한 문제였어서 후련한데 허탈.
  8. 서치뷰 필터처리관련해서 NSPredicate로는 제한사항이 존재했고 관련 내용 구글링 중, Realm Swift 10.19 버전이 최근에 나온거 확인 후 관련 메서드를 이용. 서치뷰 필터처리를 손쉽게 할 수 있었다.
  9. 타이틀값을 얻기 위해 줄단위로 자른 배열을 생성했다. 첫째 줄과 나머지줄로 구분 할 수는 없을까. (해결)
