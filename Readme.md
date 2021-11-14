@@ -24,7 +24,6 @@ https://user-images.githubusercontent.com/87598209/141441335-b0df3db2-e4d4-47a5-
  8. 서치뷰 필터처리관련해서 NSPredicate로는 제한사항이 존재했고 관련 내용 구글링 중, Realm Swift 10.19 버전이 최근에 나온거 확인 후 관련 메서드를 이용. 서치뷰 필터처리를 손쉽게 할 수 있었다.
  9. 타이틀값을 얻기 위해 줄단위로 자른 배열을 생성했다. 첫째 줄과 나머지줄로 구분 할 수는 없을까. (해결)
     -> let title = memoTextView.text.content.firstIndex(of: "\n) 이렇게하면 첫번째 줄까지를 자를 수 있고 -> memoTextView.text.index(after: title)..<memoTextView.text.endIndex 이렇게 하면 나머지 줄을 자를 수 있다.
- 10. 텍스트컬러 변경 미구현.
  
  ### 11/14 update
  
@@ -32,3 +31,4 @@ https://user-images.githubusercontent.com/87598209/141441335-b0df3db2-e4d4-47a5-
  2. 고정된 메모가 존재하지않을 때 검색창에서 헤더가 뜨지 않는 이슈 해결.
  3. 검색창에서 리딩스와이프, 트레일링 스와이프시 런타임 오류 발생 문제 해결
  4. 날짜, 넘버 포메터 구현.
+ 5. 검색창에서 검색내용 텍스트컬러 변경 구현.
