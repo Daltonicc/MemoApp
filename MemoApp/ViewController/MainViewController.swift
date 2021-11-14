@@ -187,7 +187,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             
             if fixedList.count < 5 {
                 try! self.localRealm.write {
-                    if indexPath.section == 0 {
+                    if self.isFiltering {
+                        if indexPath.section == 0 {
+                            let filterRow = self.searchFilterList.reversed()[indexPath.row]
+                            filterRow.favoriteStatus.toggle()
+                        }
+                        
+                    } else if indexPath.section == 0 {
                         if fixedList.count != 0 {
                             let fixedRow = fixedList.reversed()[indexPath.row]
                             fixedRow.favoriteStatus.toggle()
@@ -208,7 +214,16 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         favoriteAction.backgroundColor = .systemOrange
         
-        if indexPath.section == 0 {
+        if isFiltering {
+            if indexPath.section == 0 {
+                let filterRow = searchFilterList.reversed()[indexPath.row]
+                if filterRow.favoriteStatus == true {
+                    favoriteAction.image = UIImage(systemName: "pin.slash.fill")
+                } else {
+                    favoriteAction.image = UIImage(systemName: "pin.fill")
+                }
+            }
+        } else if indexPath.section == 0 {
             if fixedList.count != 0 {
                 let fixedRow = fixedList.reversed()[indexPath.row]
                 if fixedRow.favoriteStatus == true {
@@ -243,7 +258,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             let ok = UIAlertAction(title: "확인", style: .default) { _ in
                 
                 try! self.localRealm.write {
-                    if indexPath.section == 0 {
+                    if self.isFiltering {
+                        if indexPath.section == 0 {
+                            let filterRow = self.searchFilterList.reversed()[indexPath.row]
+                            self.localRealm.delete(filterRow)
+                        }
+                    } else if indexPath.section == 0 {
                         if fixedList.count != 0 {
                             let fixedRow = fixedList.reversed()[indexPath.row]
                             self.localRealm.delete(fixedRow)
@@ -277,9 +297,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         if section == 0 {
            if fixedList.count != 0 {
                 return 50
+            // 검색 기능 켜졌을 때
+           } else if isFiltering {
+                return 50
            } else {
-                return 0
-            }
+               return 0
+           }
         } else {
             return 50
         }
@@ -364,6 +387,12 @@ extension MainViewController: UISearchResultsUpdating {
  7. 리딩 스와이프 관련해서 너무 시간 잡아먹어서(한 5시간 쓴듯) 스트레스 너무 받았지만 정말 단순한 문제였어서 후련한데 허탈.
  8. 서치뷰 필터처리관련해서 NSPredicate로는 제한사항이 존재했고 관련 내용 구글링 중, Realm Swift 10.19 버전이 최근에 나온거 확인 후 관련 메서드를 이용. 서치뷰 필터처리를 손쉽게 할 수 있었다.
  9. 날짜, 넘버 포메터 구현해야함.
- 10. 검색화면에서 리딩스와이프, 트레일링 스와이프 미구현. 텍스트컬러 변경 미구현.
- 11. 키보드노티피케이션을 통해 텍스트뷰의 높이가 자동 조절이 되게끔 구현해줬다. 그런데 스크롤하게 되면 네비게이션바의 백그라운드 컬러와 높이가 바뀌는 현상이 존재한다.
+ 10. 텍스트컬러 변경 미구현.
+ 
+ 11/14 update
+ 
+ 1. 키보드노티피케이션을 통해 텍스트뷰의 높이가 자동 조절이 되게끔 구현해줬다. 그런데 스크롤하게 되면 네비게이션바의 백그라운드 컬러와 높이가 바뀌는 현상이 존재한다.
+ 2. 고정된 메모가 존재하지않을 때 검색창에서 헤더가 뜨지 않는 이슈 해결.
+ 3. 검색창에서 리딩스와이프, 트레일링 스와이프시 런타임 오류 발생 문제 해결
+ 
 */
