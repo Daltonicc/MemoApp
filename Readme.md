@@ -23,7 +23,7 @@
  9. 타이틀값을 얻기 위해 줄단위로 자른 배열을 생성했다. 첫째 줄과 나머지줄로 구분 할 수는 없을까. (해결)
     -> let title = memoTextView.text.content.firstIndex(of: "\n) 이렇게하면 첫번째 줄까지를 자를 수 있고 -> memoTextView.text.index(after: title)..<memoTextView.text.endIndex 이렇게 하면 나머지 줄을 자를 수 있다.
  
- ### 11/14 update
+ ### 11/14 Update
  
  1. 키보드노티피케이션을 통해 텍스트뷰의 높이가 자동 조절이 되게끔 구현해줬다. 그런데 스크롤하게 되면 네비게이션바의 백그라운드 컬러와 높이가 바뀌는 현상이 존재한다.
  2. 고정된 메모가 존재하지않을 때 검색창에서 헤더가 뜨지 않는 이슈 해결.
